@@ -461,7 +461,6 @@ def renta_loop(scheduler):
     conn.commit()
     cursor.close()
 
-    print("wheat updated")
 
     # UPDATE INTERFACE TKINTER + CONF FILES
 
@@ -871,7 +870,7 @@ sellLog["font"] = police
 
 
 my_scheduler = sched.scheduler(time.time, time.sleep)
-my_scheduler.enter(5, 1, renta_loop, (my_scheduler,))
+my_scheduler.enter(60, 1, renta_loop, (my_scheduler,))
 schedThread = threading.Thread(target=my_scheduler.run)
 schedThread.daemon = True
 schedThread.start()
