@@ -35,6 +35,8 @@ Rentability :
 dimension * (basicsAgricultors + raresAgricultors*1.5 + epicsAgricultors*2.5 + legendariesAgricultors*4)
 ```
 
+If u need help on something, contact me on discord : akira#9322
+
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
