@@ -35,6 +35,11 @@ Rentability :
 dimension * (basicsAgricultors + raresAgricultors*1.5 + epicsAgricultors*2.5 + legendariesAgricultors*4)
 ```
 
+Drop rates :
+```
+Basic : 70%  |  Rare : 20%  |  Epic : 10%  |  Legendary : 5%
+```
+
 If u need help on something, contact me on discord : akira#9322
 
 ## Contributing
