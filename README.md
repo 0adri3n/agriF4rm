@@ -39,6 +39,8 @@ Wheat price in fixed on ETH price, divided by 100.
 
 If u need help on something, contact me on Discord : akira#9322
 
+Or u can join the server <a href="https://discord.gg/dHUHJD6aub">here</a>
+
 ## Installation
 
 Go to the <a href="https://github.com/akira-trinity/agriF4rm/releases">releases</a> page and download the last version in .zip.
