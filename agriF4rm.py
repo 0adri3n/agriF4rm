@@ -387,7 +387,7 @@ def sell():
 
         sellLog.configure(text="You make\n" + str(updatedmoney-money) + "$\n of benefit !")
 
-    updateLabels(False)
+    updateLabels(True)
     clearThread = threading.Thread(target=lambda: clearLabel(sellLog))
     clearThread.start()
 
