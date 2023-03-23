@@ -462,7 +462,6 @@ def renta_loop(scheduler):
     cursor.close()
 
 
-    # UPDATE INTERFACE TKINTER + CONF FILES
 
     fieldData = fieldinfo()
     wheatPrice = externalfunctions.getwheatprice()
