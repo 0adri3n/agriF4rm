@@ -3,30 +3,21 @@
 
 ## <p align="center"> Manage your fields like a real f4rmer. Recruit agricultors, upgrade your fields and sell your wheat.</p>
 
+## How to play
 
-## Installation
+- Create ur first field.
 
-Go to the <a href="https://github.com/akira-trinity/agriF4rm/releases">releases</a> page and download the last version in .zip.
+- For every new field u create, u'll have 1k$ for free to start to play.
 
-Extract it and start ```agriF4rm.exe```
+- So recruit agricultors, and now u can farm !
 
-IF U DON'T EXTRACT IT, THE .EXE WILL NOT FIND THE CONFIG FILES.
+- When u have a lot of wheat and the selling price is interesting, sell it and try to roll some agricultors ! [500$/roll]
 
-Windows can block it because I use a translator for Python to exe, and he don't rlly like it :P
-
-You also download the source code and use it with Python (download the used modules before !) :
-```bash
-python agriF4rm.py
-```
-
-## Screenshots
-
-![image](https://user-images.githubusercontent.com/62818208/227062567-92c153e5-6bb8-43cf-81dc-34ff2cc44919.png)
-
-![image](https://user-images.githubusercontent.com/62818208/227062615-5e8e1849-1b02-47f8-bfd2-9a864a1e2bd6.png)
-
+- Ur rentability is going to increase and u'll farm more and more wheat !
 
 ## General informations 
+
+When agriF4rm is opened, ur agricultors will farm every minute. So u have to keep the app open to farm !
 
 Dimensions prices :
 
@@ -46,7 +37,30 @@ Basic : 70%  |  Rare : 20%  |  Epic : 10%  |  Legendary : 5%
 
 Wheat price in fixed on ETH price, divided by 100.
 
-If u need help on something, contact me on discord : akira#9322
+If u need help on something, contact me on Discord : akira#9322
+
+## Installation
+
+Go to the <a href="https://github.com/akira-trinity/agriF4rm/releases">releases</a> page and download the last version in .zip.
+
+Extract it and start ```agriF4rm.exe```
+
+IF U DON'T EXTRACT IT, THE .EXE WILL NOT FIND THE CONFIG FILES.
+
+Windows can block it because I use a translator for Python to exe, and he don't rlly like it :P
+
+You also download the source code and use it with Python (download the used modules before !) :
+```bash
+python agriF4rm.py
+```
+
+
+## Screenshots
+
+![image](https://user-images.githubusercontent.com/62818208/227062567-92c153e5-6bb8-43cf-81dc-34ff2cc44919.png)
+
+![image](https://user-images.githubusercontent.com/62818208/227062615-5e8e1849-1b02-47f8-bfd2-9a864a1e2bd6.png)
+
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
