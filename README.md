@@ -44,6 +44,8 @@ Drop rates :
 Basic : 70%  |  Rare : 20%  |  Epic : 10%  |  Legendary : 5%
 ```
 
+Wheat price in fixed on ETH price, divided by 100.
+
 If u need help on something, contact me on discord : akira#9322
 
 ## Contributing
