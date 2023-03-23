@@ -523,7 +523,7 @@ def StartRPC():
                 "large_text": "agriF4rm",
                 "large_image": "logosquare" 
             },
-            "buttons" : [{"label" : "website", "url" : "https://akira-trinity.github.io/agriF4rm/"}]
+            "buttons" : [{"label" : "website", "url" : "https://akira-trinity.github.io/agriF4rm/docs/index.html"}]
     }
     
     rpc_obj.set_activity(activity)
