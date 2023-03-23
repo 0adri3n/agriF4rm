@@ -10,6 +10,8 @@ Go to the <a href="https://github.com/akira-trinity/agriF4rm/releases">releases<
 
 Extract it and start ```agriF4rm.exe```
 
+Windows can block it because I use a translator for python to exe, and Windows don't rlly like it :P
+
 You also download the source code and use it with Python (download the used modules before !) :
 ```bash
 python agriF4rm.py
