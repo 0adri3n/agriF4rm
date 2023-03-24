@@ -12,9 +12,19 @@ import tkinter
 import tkinter.font as font
 import tkinter
 import sys
+from tkinter.messagebox import askyesno
+from pystray import MenuItem as item
+import pystray
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import numpy as np
+
+
 
 CLIENT_ID = "1088200928122904607" # Discord RPC Application ID
 ID_ACTUAL_USER = None
+START_TIME = time.time()
+
 
 def createfieldStart(username):
 
@@ -174,6 +184,48 @@ def switchUser(username):
     else:
         logLabel.configure(text="Please select a user.", fg="red")
 
+def deleteUser(username):
+
+    global ID_ACTUAL_USER
+    global choiceListCombo
+    global logLabel
+    global actualLabel
+
+    if choiceListCombo.get() != "":
+
+        conn = sqlite3.connect('data/field_database.db')
+        cursor = conn.cursor()
+
+        cursor.execute("""SELECT id FROM users WHERE username=?""", (username,))
+
+        id_user2del = cursor.fetchone()[0]
+
+        if id_user2del == ID_ACTUAL_USER:
+            logLabel.configure(text="Can't delete actual user.", fg="red")
+
+        else:
+
+            answer = askyesno(title='Confirmation',message='Are you sure that you want to delete this user ?')
+            if answer :
+                cursor.execute("""SELECT hashfield FROM users WHERE username=?""", (username,))
+                hashfieldDel = cursor.fetchone()[0]
+                cursor.execute("""DELETE FROM users WHERE username=?""", (username,))
+                cursor.execute("""DELETE FROM fieldsdetails WHERE hashfield=?""", (hashfieldDel,))
+                conn.commit()
+                logLabel.configure(text="User removed !", fg="green")
+                cursor.close()
+
+            else :
+
+                logLabel.configure(text="Deletion canceled.", fg="red")
+
+
+        updateLabels(True)
+        cursor.close()
+
+
+    else:
+        logLabel.configure(text="Please select a user.", fg="red")
 
 
 def fieldinfo():
@@ -247,7 +299,7 @@ def multiroll(quantity):
                 epic = 0
                 legend = 0
                 for i in range(int(quantity)):
-                    pickedagri = random.choices(agriList, weights=(70, 20, 10, 5), k=1)[0]
+                    pickedagri = random.choices(agriList, weights=(65, 20, 10, 5), k=1)[0]
                     if pickedagri == "basic" :
                         basic += 1
                     elif pickedagri == "rare" :
@@ -385,7 +437,7 @@ def sell():
         cursor.execute("""UPDATE fieldsdetails SET bleamount = ? WHERE hashfield=?""", (wheatamount, hashfield))
         conn.commit()
 
-        sellLog.configure(text="You make\n" + str(updatedmoney-money) + "$\n of benefit !")
+        sellLog.configure(text="You make\n" + str(updatedmoney-money) + "$\n of profit !")
 
     updateLabels(True)
     clearThread = threading.Thread(target=lambda: clearLabel(sellLog))
@@ -399,19 +451,31 @@ def getUpgradesList():
 
 def updateLabels(fromSwitch):
 
+    global START_TIME
+
     fieldData = fieldinfo()
     wheatPrice = externalfunctions.getwheatprice()
     
     dimLabel.configure(text="Dimension : " + str(fieldData[0]))
-    rentLabel.configure(text="Rentability : " + str(fieldData[1]) + "/hour | " + str(round(float(fieldData[1]/60), 2)) + "/minute")
+    rentLabel.configure(text="Profitability : " + str(fieldData[1]) + "/hour | " + str(round(float(fieldData[1]/60), 2)) + "/minute")
     wheatLabel.configure(text="Wheat amount : " + str(fieldData[2]))
-    moneyLabel.configure(text="Money amount : " + str(fieldData[3]))
-    basicAgri.configure(text="Basic agricultor : " + str(fieldData[4]))
-    rareAgri.configure(text="Rare agricultor : " + str(fieldData[5]))
-    epicAgri.configure(text="Epic agricultor : " + str(fieldData[6]))
-    legenAgri.configure(text="Legendary agricultor : " + str(fieldData[7]))
+    moneyLabel.configure(text="Money balance : " + str(fieldData[3]))
+    basicAgri.configure(text="Basic agricultors : " + str(fieldData[4]))
+    rareAgri.configure(text="Rare agricultors : " + str(fieldData[5]))
+    epicAgri.configure(text="Epic agricultors : " + str(fieldData[6]))
+    legenAgri.configure(text="Legendary agricultors : " + str(fieldData[7]))
 
     sellingValue.configure(text=str(wheatPrice) + "$")
+
+    settingsfiles = open("config/settings.yaml", "r")
+    settingsData = yaml.safe_load(settingsfiles)
+    settingsfiles.close()
+
+    playTime = settingsData["totalPlayTime"]
+    updatedPlaytime = playTime + (time.time() - START_TIME)
+    playTime = round(round(int(updatedPlaytime), 0)/3600, 2)
+
+    playTimeLabel.configure(text="Time played : " + str(playTime) + "h")
 
     upgradeDict = getUpgradesList()
     upgradeList = list(upgradeDict)
@@ -461,21 +525,17 @@ def renta_loop(scheduler):
     conn.commit()
     cursor.close()
 
+    updateLabels(False)
 
+    settingsfiles = open("config/settings.yaml", "r")
+    settingsData = yaml.safe_load(settingsfiles)
+    settingsfiles.close()
+    if settingsData["displayPlot"] == 1:
+        fieldData = fieldinfo()
+        totalAgri = fieldData[4] + fieldData[5] + fieldData[6] + fieldData[7]
+        if totalAgri < 1000000 and app.winfo_viewable():
+            createPlot()
 
-    fieldData = fieldinfo()
-    wheatPrice = externalfunctions.getwheatprice()
-    
-    dimLabel.configure(text="Dimension : " + str(fieldData[0]))
-    rentLabel.configure(text="Rentability : " + str(fieldData[1]) + "/hour | " + str(round(float(fieldData[1]/60), 2)) + "/minute")
-    wheatLabel.configure(text="Wheat amount : " + str(fieldData[2]))
-    moneyLabel.configure(text="Money amount : " + str(fieldData[3]))
-    basicAgri.configure(text="Basic agricultor : " + str(fieldData[4]))
-    rareAgri.configure(text="Rare agricultor : " + str(fieldData[5]))
-    epicAgri.configure(text="Epic agricultor : " + str(fieldData[6]))
-    legenAgri.configure(text="Legendary agricultor : " + str(fieldData[7]))
-
-    sellingValue.configure(text=str(wheatPrice) + "$")
 
 def getActualUser():
 
@@ -496,15 +556,22 @@ def getAllUsers():
     return(list(cursor.fetchall()))
 
 
-def saveSettings(rpcVar, settingsData):
+def saveSettings(rpcVar, plotVar, settingsData, bgFileName):
+
 
     settingsData["rpc"] = rpcVar.get()
+    settingsData["bgFileName"] = bgFileName.get()
+    settingsData["displayPlot"] = plotVar.get()
 
     settingsWrite = open("config/settings.yaml", "w")
     settingsWrite.write(yaml.dump(settingsData, default_flow_style=False))
     settingsWrite.close()
 
     ToggleDiscordRpc(rpcVar.get())
+
+    newBg = tkinter.PhotoImage(file="src/img/" + bgFileName.get())
+    bg.configure(image=newBg)
+    bg.image = newBg
 
 
 def StartRPC():            
@@ -574,6 +641,64 @@ def insertMaxRolls():
     rollAmountEntry.insert(0, str(maxRolls))
 
 
+def createPlot():
+    
+    fieldData = fieldinfo()
+    basicColor = [128, 128, 128]
+    rareColor = [0, 0, 204]
+    epicColor = [153, 0, 153]
+    legColor = [204, 204, 0]
+    colorList=[]
+    x_agri = []
+    y_agri = []
+
+    for i in range(fieldData[4]):
+        x_rd = random.random()
+        y_rd = random.random()
+        x_agri.append(x_rd)
+        y_agri.append(y_rd)
+        colorList.append(basicColor)
+    
+    for i in range(fieldData[5]):
+        x_rd = random.random()
+        y_rd = random.random()
+        x_agri.append(x_rd)
+        y_agri.append(y_rd)
+        colorList.append(rareColor)
+
+    for i in range(fieldData[6]):
+        x_rd = random.random()
+        y_rd = random.random()
+        x_agri.append(x_rd)
+        y_agri.append(y_rd)
+        colorList.append(epicColor)
+
+    for i in range(fieldData[7]):
+        x_rd = random.random()
+        y_rd = random.random()
+        x_agri.append(x_rd)
+        y_agri.append(y_rd)
+        colorList.append(legColor)
+
+    try:
+        fig = plt.figure(figsize=(2,2))
+        subplot = fig.add_subplot(111)
+        subplot.cla()
+        subplot.scatter(
+            x=x_agri,
+            y=y_agri,
+            c=np.array(colorList)/255.0
+        )
+        subplot.axis("off")
+        fig.set_facecolor((0.8, 0.8, 0.0))
+
+        canva = FigureCanvasTkAgg(fig, master=app)
+        canva.get_tk_widget().place(x=900, y=500)
+        canva.draw()
+    except:
+        pass
+
+
 def on_closing():
 
     global app
@@ -592,7 +717,7 @@ def on_closing():
     settingsWrite.close()
 
     app.destroy()
-
+    exit()
 
 
 # GUI PART
@@ -646,12 +771,17 @@ def changeUserWindow():
     switchUserButton.place(x=125, y=140)
     switchUserButton["font"] = police
 
+    deleteUserButton = tkinter.Button(userWin, text="Delete", bg="black", fg="white", command=lambda: deleteUser(choiceListCombo.get()))
+    deleteUserButton.place(x=230, y=140)
+    deleteUserButton["font"] = police
+
     logLabel = tkinter.Label(userWin, text="", bg="black", fg="red")
     logLabel.place(x=10, y=170)
     logLabel["font"] = police
 
 
 def settingsWindow():
+
 
     settingapp = tkinter.Toplevel()
     settingapp.wm_title("Settings")
@@ -669,6 +799,7 @@ def settingsWindow():
     settingsfiles.close()
 
     rpcVar = tkinter.IntVar()
+    plotVar = tkinter.IntVar()
 
     if settingsData["rpc"] == 1:
 
@@ -681,13 +812,57 @@ def settingsWindow():
         rpcChoice = tkinter.Checkbutton(settingapp, bg="black", fg="black", variable=rpcVar)
         rpcChoice.place(x=10, y=10)
 
+    if settingsData["displayPlot"] == 1:
+
+        plotChoice = tkinter.Checkbutton(settingapp, bg="black", fg="black", variable=plotVar)
+        plotChoice.place(x=10, y=100)
+        plotChoice.select()
+
+    else:
+
+        plotChoice = tkinter.Checkbutton(settingapp, bg="black", fg="black", variable=plotVar)
+        plotChoice.place(x=10, y=100)
+
     rpcText = tkinter.Label(settingapp, text="Discord RPC", bg="black", fg="white")
     rpcText.place(x=30, y=12)
     rpcText["font"] = police
 
-    saveButton = tkinter.Button(settingapp, text="Save settings", bg="black", fg="white", command= lambda: saveSettings(rpcVar, settingsData))
+    bgLabel = tkinter.Label(settingapp, text="Background file name :", bg="black", fg="white")
+    bgLabel.place(x=10, y=40)
+    bgLabel["font"] = police
+
+    bgNameEntry = tkinter.Entry(settingapp, bg="black", fg="white")
+    bgNameEntry.place(x=12, y=70)
+    bgNameEntry["font"] = police
+
+    bgNameEntry.insert(0, settingsData["bgFileName"])
+
+    plotText = tkinter.Label(settingapp, text="Plot display", bg="black", fg="white")
+    plotText.place(x=30, y=100)
+    plotText["font"] = police
+
+
+    saveButton = tkinter.Button(settingapp, text="Save settings", bg="black", fg="white", command= lambda: saveSettings(rpcVar, plotVar, settingsData, bgNameEntry))
     saveButton.place(x=15, y=165)
     saveButton["font"] = police
+
+def minimize():
+
+    app.withdraw()
+    image=Image.open("src/img/agricultureICO.ico")
+    menu=(item('Show', lambda: maximize(icon)), item('Quit', lambda: quitFromTray(icon)))
+    icon=pystray.Icon("name", image, "agriF4rm", menu)
+    icon.run()
+
+def maximize(icon):
+
+    icon.stop()
+    app.after(0,app.deiconify())
+
+def quitFromTray(icon):
+
+    icon.stop()
+    on_closing()
 
 
 app = tkinter.Tk()
@@ -700,14 +875,15 @@ if sys.platform == "win32":
 police = font.Font(family='Courier', size=11)
 titleFont = font.Font(family='Courier', size=13, weight="bold")
 
-
-img = tkinter.PhotoImage(file="src/img/bg.png")
-bg = tkinter.Label(app,image=img)
-bg.place(x=-2, y=-1)
-
 settingsfiles = open("config/settings.yaml", "r")
 settingsData = yaml.safe_load(settingsfiles)
 settingsfiles.close()
+
+bgFileName = settingsData["bgFileName"]
+img = tkinter.PhotoImage(file="src/img/" + bgFileName)
+bg = tkinter.Label(app,image=img)
+bg.place(x=-2, y=-1)
+
 
 playTime = settingsData["totalPlayTime"]
 playTime = round(round(int(playTime), 0)/3600, 2)
@@ -728,6 +904,12 @@ userButton = tkinter.Button(app, fg="black", bg="black", image=userImg, command=
 userButton.place(x=990, y=10)
 
 
+miniImg = tkinter.PhotoImage(file="src/img/mini.png", width=52, height=52)
+
+miniButton = tkinter.Button(app, fg="black", bg="black", image=miniImg, command=minimize, borderwidth=0, cursor="target")
+miniButton.place(x=1041, y=57)
+
+
 statsLabel = tkinter.Label(app, text="Field's data :", bg="black", fg="red")
 statsLabel.place(x=240, y=10)
 statsLabel["font"] = font.Font(family='Courier', size=11, weight="bold")
@@ -736,7 +918,7 @@ dimLabel = tkinter.Label(app, text="Dimension : ", bg="black", fg="white")
 dimLabel.place(x=240, y=30)
 dimLabel["font"] = police
 
-rentLabel = tkinter.Label(app, text="Rentability :", bg="black", fg="white")
+rentLabel = tkinter.Label(app, text="Profitability :", bg="black", fg="white")
 rentLabel.place(x=240, y=50)
 rentLabel["font"] = police
 
@@ -744,7 +926,7 @@ wheatLabel = tkinter.Label(app, text="Wheat amount :", bg="black", fg="white")
 wheatLabel.place(x=240, y=70)
 wheatLabel["font"] = police
 
-moneyLabel = tkinter.Label(app, text="Money amount :", bg="black", fg="white")
+moneyLabel = tkinter.Label(app, text="Money balance :", bg="black", fg="white")
 moneyLabel.place(x=240, y=90)
 moneyLabel["font"] = police
 
@@ -777,40 +959,40 @@ dropRateTitle = tkinter.Label(app, text="Drop rate :", bg="black", fg="red")
 dropRateTitle.place(x=760, y=10)
 dropRateTitle["font"] = font.Font(family='Courier', size=11, weight="bold")
 
-basicAgriRate = tkinter.Label(app, text="Basic agricultors : 70%", bg="black", fg="white")
+basicAgriRate = tkinter.Label(app, text="Basic agricultors : 65%", bg="black", fg="white")
 basicAgriRate.place(x=760, y=30)
 basicAgriRate["font"] = police
 
-rareAgriRate = tkinter.Label(app, text="Rare agricultors : 30%", bg="black", fg="white")
+rareAgriRate = tkinter.Label(app, text="Rare agricultors : 20%", bg="black", fg="white")
 rareAgriRate.place(x=760, y=50)
 rareAgriRate["font"] = police
 
 epicAgriRate = tkinter.Label(app, text="Epic agricultors : 15%", bg="black", fg="white")
-epicAgriRate.place(x=760, y=50)
+epicAgriRate.place(x=760, y=70)
 epicAgriRate["font"] = police
 
 legenAgriRate = tkinter.Label(app, text="Legendary agricultors : 5%", bg="black", fg="white")
-legenAgriRate.place(x=760, y=70)
+legenAgriRate.place(x=760, y=90)
 legenAgriRate["font"] = police
 
 prodTitle = tkinter.Label(app, text="Production :", bg="black", fg="red")
-prodTitle.place(x=760, y=92)
+prodTitle.place(x=760, y=112)
 prodTitle["font"] = font.Font(family='Courier', size=11, weight="bold")
 
 basicAgriProd = tkinter.Label(app, text="Basic agricultors : 1 w/h", bg="black", fg="white")
-basicAgriProd.place(x=760, y=110)
+basicAgriProd.place(x=760, y=130)
 basicAgriProd["font"] = police
 
 rareAgriProd = tkinter.Label(app, text="Rare agricultors : 1.5 w/h", bg="black", fg="white")
-rareAgriProd.place(x=760, y=130)
+rareAgriProd.place(x=760, y=150)
 rareAgriProd["font"] = police
 
 epicAgriProd = tkinter.Label(app, text="Epic agricultors : 2.5 w/h", bg="black", fg="white")
-epicAgriProd.place(x=760, y=150)
+epicAgriProd.place(x=760, y=170)
 epicAgriProd["font"] = police
 
 legenAgriProd = tkinter.Label(app, text="Legendary agricultors : 4 w/h", bg="black", fg="white")
-legenAgriProd.place(x=760, y=170)
+legenAgriProd.place(x=760, y=190)
 legenAgriProd["font"] = police
 
 
@@ -818,7 +1000,7 @@ rollTitleLabel = tkinter.Label(app, text="Roll Agricultors", bg="black", fg="red
 rollTitleLabel.place(x=120, y=300)
 rollTitleLabel["font"] = titleFont
 
-rollExpLabel = tkinter.Label(app, text="Amount of agricultors :\n[500$/roll]", bg="black", fg="white")
+rollExpLabel = tkinter.Label(app, text="Number of agricultors :\n[500$/roll]", bg="black", fg="white")
 rollExpLabel.place(x=100, y=350)
 rollExpLabel["font"] = police
 
@@ -865,7 +1047,8 @@ sellButton["font"] = police
 
 sellLog = tkinter.Label(app, text="", bg="black", fg="white")
 sellLog.place(x=790, y=420)
-sellLog["font"] = police 
+sellLog["font"] = police
+
 
 
 my_scheduler = sched.scheduler(time.time, time.sleep)
@@ -877,11 +1060,16 @@ schedThread.start()
 updateLabels(False)
 
 app.protocol("WM_DELETE_WINDOW", on_closing)
-START_TIME = time.time()
 
 settingsRead = open("config/settings.yaml", "r")
 settingsData = yaml.safe_load(settingsRead)
 settingsRead.close()
 CheckRpcSet()
+
+if settingsData["displayPlot"] == 1:
+    fieldData = fieldinfo()
+    totalAgri = fieldData[4] + fieldData[5] + fieldData[6] + fieldData[7]
+    if totalAgri < 1000000 and app.winfo_viewable():
+        createPlot()
 
 app.mainloop()
