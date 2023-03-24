@@ -1,3 +1,5 @@
 lastID: None
 rpc: 1
 totalPlayTime: 0
+displayPlot: 1
+bgFileName: bg.png
