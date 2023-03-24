@@ -522,7 +522,19 @@ def renta_loop(scheduler):
     conn.commit()
     cursor.close()
 
-    updateLabels(False)
+    fieldData = fieldinfo()
+    wheatPrice = externalfunctions.getwheatprice()
+    
+    dimLabel.configure(text="Dimension : " + str(fieldData[0]))
+    rentLabel.configure(text="Profitability : " + str(fieldData[1]) + "/hour | " + str(round(float(fieldData[1]/60), 2)) + "/minute")
+    wheatLabel.configure(text="Wheat amount : " + str(fieldData[2]))
+    moneyLabel.configure(text="Money balance : " + str(fieldData[3]))
+    basicAgri.configure(text="Basic agricultors : " + str(fieldData[4]))
+    rareAgri.configure(text="Rare agricultors : " + str(fieldData[5]))
+    epicAgri.configure(text="Epic agricultors : " + str(fieldData[6]))
+    legenAgri.configure(text="Legendary agricultors : " + str(fieldData[7]))
+
+    sellingValue.configure(text=str(wheatPrice) + "$")
 
 
 
