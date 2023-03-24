@@ -15,9 +15,6 @@ import sys
 from tkinter.messagebox import askyesno
 from pystray import MenuItem as item
 import pystray
-import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-import numpy as np
 
 
 
@@ -527,14 +524,6 @@ def renta_loop(scheduler):
 
     updateLabels(False)
 
-    settingsfiles = open("config/settings.yaml", "r")
-    settingsData = yaml.safe_load(settingsfiles)
-    settingsfiles.close()
-    if settingsData["displayPlot"] == 1:
-        fieldData = fieldinfo()
-        totalAgri = fieldData[4] + fieldData[5] + fieldData[6] + fieldData[7]
-        if totalAgri < 1000000 and app.winfo_viewable():
-            createPlot()
 
 
 def getActualUser():
@@ -556,12 +545,11 @@ def getAllUsers():
     return(list(cursor.fetchall()))
 
 
-def saveSettings(rpcVar, plotVar, settingsData, bgFileName):
+def saveSettings(rpcVar, settingsData, bgFileName):
 
 
     settingsData["rpc"] = rpcVar.get()
     settingsData["bgFileName"] = bgFileName.get()
-    settingsData["displayPlot"] = plotVar.get()
 
     settingsWrite = open("config/settings.yaml", "w")
     settingsWrite.write(yaml.dump(settingsData, default_flow_style=False))
@@ -641,63 +629,6 @@ def insertMaxRolls():
     rollAmountEntry.insert(0, str(maxRolls))
 
 
-def createPlot():
-    
-    fieldData = fieldinfo()
-    basicColor = [128, 128, 128]
-    rareColor = [0, 0, 204]
-    epicColor = [153, 0, 153]
-    legColor = [204, 204, 0]
-    colorList=[]
-    x_agri = []
-    y_agri = []
-
-    for i in range(fieldData[4]):
-        x_rd = random.random()
-        y_rd = random.random()
-        x_agri.append(x_rd)
-        y_agri.append(y_rd)
-        colorList.append(basicColor)
-    
-    for i in range(fieldData[5]):
-        x_rd = random.random()
-        y_rd = random.random()
-        x_agri.append(x_rd)
-        y_agri.append(y_rd)
-        colorList.append(rareColor)
-
-    for i in range(fieldData[6]):
-        x_rd = random.random()
-        y_rd = random.random()
-        x_agri.append(x_rd)
-        y_agri.append(y_rd)
-        colorList.append(epicColor)
-
-    for i in range(fieldData[7]):
-        x_rd = random.random()
-        y_rd = random.random()
-        x_agri.append(x_rd)
-        y_agri.append(y_rd)
-        colorList.append(legColor)
-
-    try:
-        fig = plt.figure(figsize=(2,2))
-        subplot = fig.add_subplot(111)
-        subplot.cla()
-        subplot.scatter(
-            x=x_agri,
-            y=y_agri,
-            c=np.array(colorList)/255.0
-        )
-        subplot.axis("off")
-        fig.set_facecolor((0.8, 0.8, 0.0))
-
-        canva = FigureCanvasTkAgg(fig, master=app)
-        canva.get_tk_widget().place(x=900, y=500)
-        canva.draw()
-    except:
-        pass
-
 
 def on_closing():
 
@@ -717,7 +648,6 @@ def on_closing():
     settingsWrite.close()
 
     app.destroy()
-    exit()
 
 
 # GUI PART
@@ -799,7 +729,6 @@ def settingsWindow():
     settingsfiles.close()
 
     rpcVar = tkinter.IntVar()
-    plotVar = tkinter.IntVar()
 
     if settingsData["rpc"] == 1:
 
@@ -812,16 +741,6 @@ def settingsWindow():
         rpcChoice = tkinter.Checkbutton(settingapp, bg="black", fg="black", variable=rpcVar)
         rpcChoice.place(x=10, y=10)
 
-    if settingsData["displayPlot"] == 1:
-
-        plotChoice = tkinter.Checkbutton(settingapp, bg="black", fg="black", variable=plotVar)
-        plotChoice.place(x=10, y=100)
-        plotChoice.select()
-
-    else:
-
-        plotChoice = tkinter.Checkbutton(settingapp, bg="black", fg="black", variable=plotVar)
-        plotChoice.place(x=10, y=100)
 
     rpcText = tkinter.Label(settingapp, text="Discord RPC", bg="black", fg="white")
     rpcText.place(x=30, y=12)
@@ -837,12 +756,9 @@ def settingsWindow():
 
     bgNameEntry.insert(0, settingsData["bgFileName"])
 
-    plotText = tkinter.Label(settingapp, text="Plot display", bg="black", fg="white")
-    plotText.place(x=30, y=100)
-    plotText["font"] = police
 
 
-    saveButton = tkinter.Button(settingapp, text="Save settings", bg="black", fg="white", command= lambda: saveSettings(rpcVar, plotVar, settingsData, bgNameEntry))
+    saveButton = tkinter.Button(settingapp, text="Save settings", bg="black", fg="white", command= lambda: saveSettings(rpcVar, settingsData, bgNameEntry))
     saveButton.place(x=15, y=165)
     saveButton["font"] = police
 
@@ -1065,11 +981,5 @@ settingsRead = open("config/settings.yaml", "r")
 settingsData = yaml.safe_load(settingsRead)
 settingsRead.close()
 CheckRpcSet()
-
-if settingsData["displayPlot"] == 1:
-    fieldData = fieldinfo()
-    totalAgri = fieldData[4] + fieldData[5] + fieldData[6] + fieldData[7]
-    if totalAgri < 1000000 and app.winfo_viewable():
-        createPlot()
 
 app.mainloop()
