@@ -895,7 +895,7 @@ rareAgriRate = tkinter.Label(app, text="Rare agricultors : 20%", bg="black", fg=
 rareAgriRate.place(x=760, y=50)
 rareAgriRate["font"] = police
 
-epicAgriRate = tkinter.Label(app, text="Epic agricultors : 15%", bg="black", fg="white")
+epicAgriRate = tkinter.Label(app, text="Epic agricultors : 10%", bg="black", fg="white")
 epicAgriRate.place(x=760, y=70)
 epicAgriRate["font"] = police
 
