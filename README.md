@@ -32,7 +32,7 @@ dimension * (basicsAgricultors + raresAgricultors*1.5 + epicsAgricultors*2.5 + l
 
 Drop rates :
 ```
-Basic : 70%  |  Rare : 20%  |  Epic : 10%  |  Legendary : 5%
+Basic : 60%  |  Rare : 20%  |  Epic : 10%  |  Legendary : 5%
 ```
 
 Wheat price in fixed on ETH price, divided by 100.
