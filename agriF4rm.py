@@ -966,7 +966,6 @@ sellLog.place(x=790, y=420)
 sellLog["font"] = police
 
 
-
 my_scheduler = sched.scheduler(time.time, time.sleep)
 my_scheduler.enter(60, 1, renta_loop, (my_scheduler,))
 schedThread = threading.Thread(target=my_scheduler.run)
