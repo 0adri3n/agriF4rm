@@ -528,7 +528,7 @@ def renta_loop(scheduler):
     
     dimLabel.configure(text="Dimension : " + str(fieldData[0]))
     rentLabel.configure(text="Profitability (w): " + str(fieldData[1]) + "/h | " + str(round(float(fieldData[1]/60), 2)) + "/m")
-    rentDollarLabel.configure(text="Profitability ($): " + str(fieldData[1]*wheatPrice) + "/h | " + str(round(float(fieldData[1]/60)/wheatPrice, 2)*wheatPrice) + "/m")
+    rentDollarLabel.configure(text="Profitability ($): " + str(fieldData[1]*wheatPrice) + "/h | " + str(round(float(fieldData[1]*wheatPrice/60), 2)) + "/m")
     wheatLabel.configure(text="Wheat amount : " + str(fieldData[2]))
     moneyLabel.configure(text="Money balance : " + str(round(fieldData[3], 2)))
     basicAgri.configure(text="Basic agricultors : " + str(fieldData[4]))
