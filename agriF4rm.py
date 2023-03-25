@@ -454,9 +454,10 @@ def updateLabels(fromSwitch):
     wheatPrice = externalfunctions.getwheatprice()
     
     dimLabel.configure(text="Dimension : " + str(fieldData[0]))
-    rentLabel.configure(text="Profitability : " + str(fieldData[1]) + "/hour | " + str(round(float(fieldData[1]/60), 2)) + "/minute")
+    rentLabel.configure(text="Profitability (w): " + str(fieldData[1]) + "/h | " + str(round(float(fieldData[1]/60), 2)) + "/m")
+    rentDollarLabel.configure(text="Profitability ($): " + str(fieldData[1]*wheatPrice) + "/h | " + str(round(float(fieldData[1]*wheatPrice/60), 2)) + "/m")
     wheatLabel.configure(text="Wheat amount : " + str(fieldData[2]))
-    moneyLabel.configure(text="Money balance : " + str(fieldData[3]))
+    moneyLabel.configure(text="Money balance : " + str(round(fieldData[3], 2)))
     basicAgri.configure(text="Basic agricultors : " + str(fieldData[4]))
     rareAgri.configure(text="Rare agricultors : " + str(fieldData[5]))
     epicAgri.configure(text="Epic agricultors : " + str(fieldData[6]))
@@ -526,15 +527,26 @@ def renta_loop(scheduler):
     wheatPrice = externalfunctions.getwheatprice()
     
     dimLabel.configure(text="Dimension : " + str(fieldData[0]))
-    rentLabel.configure(text="Profitability : " + str(fieldData[1]) + "/hour | " + str(round(float(fieldData[1]/60), 2)) + "/minute")
+    rentLabel.configure(text="Profitability (w): " + str(fieldData[1]) + "/h | " + str(round(float(fieldData[1]/60), 2)) + "/m")
+    rentDollarLabel.configure(text="Profitability ($): " + str(fieldData[1]*wheatPrice) + "/h | " + str(round(float(fieldData[1]/60)/wheatPrice, 2)*wheatPrice) + "/m")
     wheatLabel.configure(text="Wheat amount : " + str(fieldData[2]))
-    moneyLabel.configure(text="Money balance : " + str(fieldData[3]))
+    moneyLabel.configure(text="Money balance : " + str(round(fieldData[3], 2)))
     basicAgri.configure(text="Basic agricultors : " + str(fieldData[4]))
     rareAgri.configure(text="Rare agricultors : " + str(fieldData[5]))
     epicAgri.configure(text="Epic agricultors : " + str(fieldData[6]))
     legenAgri.configure(text="Legendary agricultors : " + str(fieldData[7]))
 
     sellingValue.configure(text=str(wheatPrice) + "$")
+
+    settingsfiles = open("config/settings.yaml", "r")
+    settingsData = yaml.safe_load(settingsfiles)
+    settingsfiles.close()
+
+    playTime = settingsData["totalPlayTime"]
+    updatedPlaytime = playTime + (time.time() - START_TIME)
+    playTime = round(round(int(updatedPlaytime), 0)/3600, 2)
+
+    playTimeLabel.configure(text="Time played : " + str(playTime) + "h")
 
 
 
@@ -638,6 +650,7 @@ def insertMaxRolls():
     moneyAmount = fieldData[3]
     maxRolls = math.floor(moneyAmount/500)
 
+    rollAmountEntry.delete(0,tkinter.END)
     rollAmountEntry.insert(0, str(maxRolls))
 
 
@@ -769,7 +782,6 @@ def settingsWindow():
     bgNameEntry.insert(0, settingsData["bgFileName"])
 
 
-
     saveButton = tkinter.Button(settingapp, text="Save settings", bg="black", fg="white", command= lambda: saveSettings(rpcVar, settingsData, bgNameEntry))
     saveButton.place(x=15, y=165)
     saveButton["font"] = police
@@ -797,7 +809,7 @@ app = tkinter.Tk()
 app.geometry("1100x700")
 app.title("agriF4rm")
 app.maxsize(1100, 700)
-app.minsize(1100, 700)
+app.minsize(1100, 625)
 if sys.platform == "win32":
     app.iconbitmap("src/img/agricultureICO.ico")
 police = font.Font(family='Courier', size=11)
@@ -839,39 +851,47 @@ miniButton.place(x=1041, y=57)
 
 
 statsLabel = tkinter.Label(app, text="Field's data :", bg="black", fg="red")
-statsLabel.place(x=240, y=10)
+statsLabel.place(x=230, y=10)
 statsLabel["font"] = font.Font(family='Courier', size=11, weight="bold")
 
 dimLabel = tkinter.Label(app, text="Dimension : ", bg="black", fg="white")
-dimLabel.place(x=240, y=30)
+dimLabel.place(x=230, y=30)
 dimLabel["font"] = police
 
-rentLabel = tkinter.Label(app, text="Profitability :", bg="black", fg="white")
-rentLabel.place(x=240, y=50)
+rentLabel = tkinter.Label(app, text="Profitability (w):", bg="black", fg="white")
+rentLabel.place(x=230, y=50)
 rentLabel["font"] = police
 
+rentDollarLabel = tkinter.Label(app, text="Profitability ($) :", bg="black", fg="white")
+rentDollarLabel.place(x=230, y=70)
+rentDollarLabel["font"] = police
+
 wheatLabel = tkinter.Label(app, text="Wheat amount :", bg="black", fg="white")
-wheatLabel.place(x=240, y=70)
+wheatLabel.place(x=230, y=90)
 wheatLabel["font"] = police
 
 moneyLabel = tkinter.Label(app, text="Money balance :", bg="black", fg="white")
-moneyLabel.place(x=240, y=90)
+moneyLabel.place(x=230, y=110)
 moneyLabel["font"] = police
 
+agriLabel = tkinter.Label(app, text="Agricultors :", bg="black", fg="red")
+agriLabel.place(x=230, y=130)
+agriLabel["font"] = police 
+
 basicAgri = tkinter.Label(app, text="Basic agricultors :", bg="black", fg="white")
-basicAgri.place(x=240, y=110)
+basicAgri.place(x=230, y=150)
 basicAgri["font"] = police
 
 rareAgri = tkinter.Label(app, text="Rare agricultors :", bg="black", fg="white")
-rareAgri.place(x=240, y=130)
+rareAgri.place(x=230, y=170)
 rareAgri["font"] = police
 
 epicAgri = tkinter.Label(app, text="Epic agricultors :", bg="black", fg="white")
-epicAgri.place(x=240, y=150)
+epicAgri.place(x=230, y=190)
 epicAgri["font"] = police
 
 legenAgri = tkinter.Label(app, text="Legendary agricultors :", bg="black", fg="white")
-legenAgri.place(x=240, y=170)
+legenAgri.place(x=230, y=210)
 legenAgri["font"] = police
 
 sellingPrice = tkinter.Label(app, text="Wheat price :", bg="black", fg="red")
@@ -976,6 +996,7 @@ sellButton["font"] = police
 sellLog = tkinter.Label(app, text="", bg="black", fg="white")
 sellLog.place(x=790, y=420)
 sellLog["font"] = police
+
 
 
 my_scheduler = sched.scheduler(time.time, time.sleep)
