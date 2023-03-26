@@ -17,6 +17,7 @@
 
 ## General informations 
 
+
 When agriF4rm is opened, ur agricultors will farm every minute. So u have to keep the app open to farm !
 
 Dimensions prices :
