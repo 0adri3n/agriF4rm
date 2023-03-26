@@ -1,5 +1,5 @@
 # <p align="center"> agriF4rm </p>
-<p align="center"><img src="https://user-images.githubusercontent.com/62818208/227063344-fc7bfca5-d550-4e6d-af88-4e6b9e39e971.png" width=300></p>
+<p align="center"><img src="https://user-images.githubusercontent.com/62818208/227748841-a09b3cfb-76b9-4efa-8c6e-011623ac1de4.png" width=300></p>
 
 ## <p align="center"> Manage your fields like a real f4rmer. Recruit agricultors, upgrade your fields and sell your wheat.</p>
 
