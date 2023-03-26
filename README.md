@@ -59,8 +59,7 @@ python agriF4rm.py
 
 ## Screenshot
 
-![image](https://user-images.githubusercontent.com/62818208/227396756-41fbec41-e99e-4027-ae0a-b8ad12737b91.png)
-
+![image](https://user-images.githubusercontent.com/62818208/227748703-933d3daf-b17e-437d-8d42-b4096c12e155.png)
 
 
 ## Contributing
