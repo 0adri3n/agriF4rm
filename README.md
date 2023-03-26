@@ -18,7 +18,7 @@ IF U DON'T EXTRACT IT, THE .EXE WILL NOT FIND THE CONFIG FILES.
 
 Windows can block it because I use a translator for Python to exe, and he don't rlly like it :P
 
-You also download the source code and use it with Python (download the used modules before !) :
+You can also download the source code and use it with Python (download the used modules before !) :
 ```bash
 python agriF4rm.py
 ```
