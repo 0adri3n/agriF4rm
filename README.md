@@ -10,6 +10,10 @@
 
 ## Installation
 
+**Via <a href="https://0adri3n.itch.io/agrif4rm">itch.io</a>**
+
+**OR**
+
 Go to the <a href="https://github.com/akira-trinity/agriF4rm/releases">releases</a> page and download the last version in .zip.
 
 Extract it and start ```agriF4rm.exe```
